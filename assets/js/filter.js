@@ -9,8 +9,20 @@ jQuery(document).ready(function ($) {
         }
 
         let categories = [];
+        let categoryMap = {};
         $('.filter-category:checked').each(function () {
-            categories.push($(this).val());
+            let parentId = $(this).val();
+            let childId = $(this).data('first-child');
+
+            if (parentId && !categoryMap[parentId]) {
+                categories.push(parentId);
+                categoryMap[parentId] = true;
+            }
+
+            if (childId && !categoryMap[childId]) {
+                categories.push(childId);
+                categoryMap[childId] = true;
+            }
         });
 
         let attrs = [];
@@ -74,11 +86,20 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    // رویداد تغییر برای فیلترها
-    $(document).on('change', '.filter-category, .filter-attr', loadProducts);
+    // اعمال فیلتر با دکمه
+    $(document).on('click', '#woo-filter-apply', function (event) {
+        event.preventDefault();
+        loadProducts();
+    });
 
-    // اسلایدر قیمت با debounce
-    let priceTimeout;
+    function updatePriceValues(values) {
+        $("#min-price").text(values[0].toLocaleString('fa-IR'));
+        $("#max-price").text(values[1].toLocaleString('fa-IR'));
+        $("#price-min").val(values[0]);
+        $("#price-max").val(values[1]);
+    }
+
+    // اسلایدر قیمت
     if ($("#price-slider").length) {
         $("#price-slider").slider({
             range: true,
@@ -86,20 +107,13 @@ jQuery(document).ready(function ($) {
             max: 5000000,
             values: [0, 5000000],
             slide: function (event, ui) {
-                $("#min-price").text(ui.values[0].toLocaleString('fa-IR'));
-                $("#max-price").text(ui.values[1].toLocaleString('fa-IR'));
-                $("#price-min").val(ui.values[0]);
-                $("#price-max").val(ui.values[1]);
+                updatePriceValues(ui.values);
             },
-            change: function() {
-                clearTimeout(priceTimeout);
-                priceTimeout = setTimeout(loadProducts, 500);
+            change: function (event, ui) {
+                updatePriceValues(ui.values);
             }
         });
 
-        $("#min-price").text('0');
-        $("#max-price").text('5,000,000');
-        $("#price-min").val(0);
-        $("#price-max").val(5000000);
+        updatePriceValues([0, 5000000]);
     }
 });

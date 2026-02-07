@@ -69,10 +69,12 @@ add_shortcode('woo_advanced_filter', function () {
 
                     $has_children = (!is_wp_error($children) && !empty($children));
                     $first_child_name = '';
+                    $first_child_id = 0;
 
                     if ($has_children) {
                         foreach ($children as $child) {
-                            if (is_object($child) && isset($child->name)) {
+                            if (is_object($child) && isset($child->term_id, $child->name)) {
+                                $first_child_id = (int) $child->term_id;
                                 $first_child_name = $child->name;
                                 break;
                             }
@@ -82,7 +84,8 @@ add_shortcode('woo_advanced_filter', function () {
                     <label>
                         <input type="checkbox"
                             class="filter-category"
-                            value="<?= esc_attr($parent->term_id); ?>">
+                            value="<?= esc_attr($parent->term_id); ?>"
+                            data-first-child="<?= esc_attr($first_child_id); ?>">
                         <span class="cat-content">
                             <span class="cat-name"><?= esc_html($parent->name); ?></span>
                             <?php if ($first_child_name): ?>
@@ -130,6 +133,10 @@ add_shortcode('woo_advanced_filter', function () {
                 endforeach;
             endif;
             ?>
+        </div>
+
+        <div class="filter-box">
+            <button type="button" id="woo-filter-apply" class="button woo-filter-apply">اعمال فیلتر</button>
         </div>
     </div>
 
