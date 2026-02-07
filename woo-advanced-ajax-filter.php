@@ -3,7 +3,7 @@
 Plugin Name: Woo Advanced Ajax Filter
 Description: فیلتر پیشرفته ووکامرس (دسته‌بندی، قیمت، ویژگی‌ها) با Ajax
 Version: 1.1
-Author: Hamta
+Author: سیفی
 */
 
 if (!defined('ABSPATH')) exit;
@@ -43,7 +43,7 @@ add_action('wp_enqueue_scripts', function () {
 /* shortcode */
 add_shortcode('woo_advanced_filter', function () {
     ob_start();
-    ?>
+?>
 
     <div id="woo-filter">
         <!-- Categories -->
@@ -59,17 +59,17 @@ add_shortcode('woo_advanced_filter', function () {
             if (!is_wp_error($parent_cats) && !empty($parent_cats)) :
                 foreach ($parent_cats as $parent) :
                     if (!is_object($parent) || !isset($parent->term_id)) continue;
-                    
+
                     // دریافت زیردسته‌ها
                     $children = get_terms([
                         'taxonomy'   => 'product_cat',
                         'hide_empty' => true,
                         'parent'     => $parent->term_id
                     ]);
-                    
+
                     $has_children = (!is_wp_error($children) && !empty($children));
                     $first_child_name = '';
-                    
+
                     if ($has_children) {
                         foreach ($children as $child) {
                             if (is_object($child) && isset($child->name)) {
@@ -78,11 +78,11 @@ add_shortcode('woo_advanced_filter', function () {
                             }
                         }
                     }
-                    ?>
+            ?>
                     <label>
                         <input type="checkbox"
-                               class="filter-category"
-                               value="<?= esc_attr($parent->term_id); ?>">
+                            class="filter-category"
+                            value="<?= esc_attr($parent->term_id); ?>">
                         <span class="cat-content">
                             <span class="cat-name"><?= esc_html($parent->name); ?></span>
                             <?php if ($first_child_name): ?>
@@ -90,7 +90,7 @@ add_shortcode('woo_advanced_filter', function () {
                             <?php endif; ?>
                         </span>
                     </label>
-                    <?php
+            <?php
                 endforeach;
             endif;
             ?>
@@ -117,23 +117,23 @@ add_shortcode('woo_advanced_filter', function () {
                 'taxonomy' => 'pa_bag_type',
                 'hide_empty' => false
             ]);
-            
+
             if (!is_wp_error($terms) && is_array($terms) && !empty($terms)) :
                 foreach ($terms as $term) :
                     if (!is_object($term) || !isset($term->term_id)) continue;
-                    ?>
+            ?>
                     <label>
                         <input type="checkbox" class="filter-attr" value="<?= esc_attr($term->term_id); ?>">
                         <?= esc_html($term->name); ?>
                     </label>
-                <?php 
+            <?php
                 endforeach;
-            endif; 
+            endif;
             ?>
         </div>
     </div>
 
-    <?php
+<?php
     return ob_get_clean();
 });
 
@@ -141,7 +141,8 @@ add_shortcode('woo_advanced_filter', function () {
 add_action('wp_ajax_woo_advanced_filter', 'woo_advanced_filter_ajax');
 add_action('wp_ajax_nopriv_woo_advanced_filter', 'woo_advanced_filter_ajax');
 
-function woo_advanced_filter_ajax() {
+function woo_advanced_filter_ajax()
+{
 
     $args = [
         'post_type' => 'product',
