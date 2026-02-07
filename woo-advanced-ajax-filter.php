@@ -60,7 +60,7 @@ add_shortcode('woo_advanced_filter', function () {
                 foreach ($parent_cats as $parent) :
                     if (!is_object($parent) || !isset($parent->term_id)) continue;
 
-                    // دریافت زیردسته‌ها
+                    // دریافت زیردسته‌ها تا عمق 1
                     $children = get_terms([
                         'taxonomy'   => 'product_cat',
                         'hide_empty' => true,
@@ -68,31 +68,30 @@ add_shortcode('woo_advanced_filter', function () {
                     ]);
 
                     $has_children = (!is_wp_error($children) && !empty($children));
-                    $first_child_name = '';
-                    $first_child_id = 0;
-
-                    if ($has_children) {
-                        foreach ($children as $child) {
-                            if (is_object($child) && isset($child->term_id, $child->name)) {
-                                $first_child_id = (int) $child->term_id;
-                                $first_child_name = $child->name;
-                                break;
-                            }
-                        }
-                    }
             ?>
-                    <label>
-                        <input type="checkbox"
-                            class="filter-category"
-                            value="<?= esc_attr($parent->term_id); ?>"
-                            data-first-child="<?= esc_attr($first_child_id); ?>">
-                        <span class="cat-content">
-                            <span class="cat-name"><?= esc_html($parent->name); ?></span>
-                            <?php if ($first_child_name): ?>
-                                <span class="cat-sub"><?= esc_html($first_child_name); ?></span>
-                            <?php endif; ?>
-                        </span>
-                    </label>
+                    <div class="cat-group">
+                        <?php if ($has_children) : ?>
+                            <div class="cat-parent"><?= esc_html($parent->name); ?></div>
+                            <div class="cat-children">
+                                <?php foreach ($children as $child) : ?>
+                                    <?php if (!is_object($child) || !isset($child->term_id)) continue; ?>
+                                    <label class="cat-child">
+                                        <input type="checkbox"
+                                            class="filter-category"
+                                            value="<?= esc_attr($child->term_id); ?>">
+                                        <span class="cat-name"><?= esc_html($child->name); ?></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else : ?>
+                            <label class="cat-single">
+                                <input type="checkbox"
+                                    class="filter-category"
+                                    value="<?= esc_attr($parent->term_id); ?>">
+                                <span class="cat-name"><?= esc_html($parent->name); ?></span>
+                            </label>
+                        <?php endif; ?>
+                    </div>
             <?php
                 endforeach;
             endif;
@@ -110,29 +109,6 @@ add_shortcode('woo_advanced_filter', function () {
             </p>
             <input type="hidden" id="price-min">
             <input type="hidden" id="price-max">
-        </div>
-
-        <!-- Attribute -->
-        <div class="filter-box">
-            <h4>نوع کیف</h4>
-            <?php
-            $terms = get_terms([
-                'taxonomy' => 'pa_bag_type',
-                'hide_empty' => false
-            ]);
-
-            if (!is_wp_error($terms) && is_array($terms) && !empty($terms)) :
-                foreach ($terms as $term) :
-                    if (!is_object($term) || !isset($term->term_id)) continue;
-            ?>
-                    <label>
-                        <input type="checkbox" class="filter-attr" value="<?= esc_attr($term->term_id); ?>">
-                        <?= esc_html($term->name); ?>
-                    </label>
-            <?php
-                endforeach;
-            endif;
-            ?>
         </div>
 
         <div class="filter-box">
@@ -166,14 +142,6 @@ function woo_advanced_filter_ajax()
             'taxonomy' => 'product_cat',
             'field'    => 'term_id',
             'terms'    => array_map('intval', $_POST['categories'])
-        ];
-    }
-
-    if (!empty($_POST['attrs'])) {
-        $args['tax_query'][] = [
-            'taxonomy' => 'pa_bag_type',
-            'field'    => 'term_id',
-            'terms'    => array_map('intval', $_POST['attrs'])
         ];
     }
 

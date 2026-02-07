@@ -9,25 +9,8 @@ jQuery(document).ready(function ($) {
         }
 
         let categories = [];
-        let categoryMap = {};
         $('.filter-category:checked').each(function () {
-            let parentId = $(this).val();
-            let childId = $(this).data('first-child');
-
-            if (parentId && !categoryMap[parentId]) {
-                categories.push(parentId);
-                categoryMap[parentId] = true;
-            }
-
-            if (childId && !categoryMap[childId]) {
-                categories.push(childId);
-                categoryMap[childId] = true;
-            }
-        });
-
-        let attrs = [];
-        $('.filter-attr:checked').each(function () {
-            attrs.push($(this).val());
+            categories.push($(this).val());
         });
 
         ajaxRequest = $.ajax({
@@ -36,7 +19,6 @@ jQuery(document).ready(function ($) {
             data: {
                 action: 'woo_advanced_filter',
                 categories: categories,
-                attrs: attrs,
                 min: $('#price-min').val(),
                 max: $('#price-max').val()
             },
@@ -66,9 +48,9 @@ jQuery(document).ready(function ($) {
                 }
                 
                 if (scrollTarget.length) {
-                    $('html, body').animate({
+                    $('html, body').stop(true).animate({
                         scrollTop: scrollTarget.offset().top - 100
-                    }, 200);
+                    }, 120);
                 }
             },
             error(xhr, status, error) {
