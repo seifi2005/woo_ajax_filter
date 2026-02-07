@@ -5,17 +5,17 @@
     background: #fff;
 }
 
-.filter-box {
+#woo-filter .filter-box {
     margin-bottom: 25px;
 }
 
-.filter-box h4 {
+#woo-filter .filter-box h4 {
     font-size: 15px;
     margin-bottom: 15px;
     font-weight: bold;
 }
 
-.filter-box label {
+#woo-filter .filter-box label {
     display: flex;
     align-items: flex-start;
     font-size: 14px;
@@ -25,36 +25,47 @@
     border-radius: 4px;
 }
 
-.filter-box label:hover {
+#woo-filter .filter-box label:hover {
     background-color: #f5f5f5;
 }
 
-.filter-box input[type="checkbox"] {
+#woo-filter .filter-box input[type="checkbox"] {
     margin-left: 10px;
     margin-top: 2px;
     cursor: pointer;
     flex-shrink: 0;
 }
 
-.cat-content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+#woo-filter .cat-group {
+    margin-bottom: 12px;
 }
 
-.cat-name {
+#woo-filter .cat-parent {
+    font-size: 14px;
     font-weight: 600;
     color: #333;
-    font-size: 14px;
+    margin-bottom: 6px;
 }
 
-.cat-sub {
-    font-size: 12px;
-    color: #999;
-    margin-top: 2px;
+#woo-filter .cat-children {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-right: 12px;
 }
 
-.price-range {
+#woo-filter .cat-child,
+#woo-filter .cat-single {
+    margin-bottom: 0;
+}
+
+#woo-filter .cat-name {
+    font-weight: 500;
+    color: #333;
+    font-size: 13px;
+}
+
+#woo-filter .price-range {
     font-size: 13px;
     margin-top: 8px;
     text-align: center;

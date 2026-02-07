@@ -13,18 +13,12 @@ jQuery(document).ready(function ($) {
             categories.push($(this).val());
         });
 
-        let attrs = [];
-        $('.filter-attr:checked').each(function () {
-            attrs.push($(this).val());
-        });
-
         ajaxRequest = $.ajax({
             url: wooFilter.ajax_url,
             type: 'POST',
             data: {
                 action: 'woo_advanced_filter',
                 categories: categories,
-                attrs: attrs,
                 min: $('#price-min').val(),
                 max: $('#price-max').val()
             },
@@ -54,9 +48,9 @@ jQuery(document).ready(function ($) {
                 }
                 
                 if (scrollTarget.length) {
-                    $('html, body').animate({
+                    $('html, body').stop(true).animate({
                         scrollTop: scrollTarget.offset().top - 100
-                    }, 200);
+                    }, 120);
                 }
             },
             error(xhr, status, error) {
@@ -74,11 +68,20 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    // رویداد تغییر برای فیلترها
-    $(document).on('change', '.filter-category, .filter-attr', loadProducts);
+    // اعمال فیلتر با دکمه
+    $(document).on('click', '#woo-filter-apply', function (event) {
+        event.preventDefault();
+        loadProducts();
+    });
 
-    // اسلایدر قیمت با debounce
-    let priceTimeout;
+    function updatePriceValues(values) {
+        $("#min-price").text(values[0].toLocaleString('fa-IR'));
+        $("#max-price").text(values[1].toLocaleString('fa-IR'));
+        $("#price-min").val(values[0]);
+        $("#price-max").val(values[1]);
+    }
+
+    // اسلایدر قیمت
     if ($("#price-slider").length) {
         $("#price-slider").slider({
             range: true,
@@ -86,20 +89,13 @@ jQuery(document).ready(function ($) {
             max: 5000000,
             values: [0, 5000000],
             slide: function (event, ui) {
-                $("#min-price").text(ui.values[0].toLocaleString('fa-IR'));
-                $("#max-price").text(ui.values[1].toLocaleString('fa-IR'));
-                $("#price-min").val(ui.values[0]);
-                $("#price-max").val(ui.values[1]);
+                updatePriceValues(ui.values);
             },
-            change: function() {
-                clearTimeout(priceTimeout);
-                priceTimeout = setTimeout(loadProducts, 500);
+            change: function (event, ui) {
+                updatePriceValues(ui.values);
             }
         });
 
-        $("#min-price").text('0');
-        $("#max-price").text('5,000,000');
-        $("#price-min").val(0);
-        $("#price-max").val(5000000);
+        updatePriceValues([0, 5000000]);
     }
 });
